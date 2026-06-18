@@ -7,6 +7,10 @@
 /test_dl
 *.rdmmeta
 
+# 发布产物
+/dist
+/*.zip
+
 # 系统
 .DS_Store
 Thumbs.db
