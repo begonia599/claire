@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header class="hd">
+    <span class="logo"><svg viewBox="0 0 24 24"><path d="M12 3v10m0 0 4-4m-4 4-4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+    <div class="ttl">rdm 接管</div>
+    <span id="dot" class="dot" title="rdm 连接状态"></span>
+  </header>
+
+  <label class="row toggle">
+    <span>接管浏览器下载</span>
+    <input id="enabled" type="checkbox" />
+    <span class="switch"></span>
+  </label>
+
+  <label class="row toggle">
+    <span>下载前弹窗确认</span>
+    <input id="confirm" type="checkbox" />
+    <span class="switch"></span>
+  </label>
+
+  <div class="row">
+    <span>默认分段</span>
+    <div id="segs" class="segs">
+      <button class="seg" data-v="4" type="button">4</button>
+      <button class="seg active" data-v="8" type="button">8</button>
+      <button class="seg" data-v="16" type="button">16</button>
+      <button class="seg" data-v="32" type="button">32</button>
+    </div>
+  </div>
+
+  <div id="status" class="status">检测 rdm 中…</div>
+
+  <div class="hint">右键链接/视频 → 「用 rdm 下载」<br/>或在「接管」开启时直接点网页下载按钮</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

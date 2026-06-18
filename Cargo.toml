@@ -1,0 +1,29 @@
+[package]
+name = "rdm"
+version = "0.1.0"
+edition = "2021"
+description = "Rust Download Manager - multi-segment, resumable downloader"
+
+[workspace]
+members = ["src-tauri"]
+
+[dependencies]
+# 异步运行时
+tokio = { version = "1", features = ["full"] }
+# HTTP 客户端（用 native-tls，在 Windows 上走系统 SChannel，兼容性更好）
+reqwest = { version = "0.12", default-features = false, features = ["native-tls", "json", "stream"] }
+# 序列化（.meta 文件 + IPC JSON）
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# 错误处理
+anyhow = "1"
+# 异步工具
+futures = "0.3"
+# 本地 HTTP 服务（daemon 接口，后续浏览器扩展也复用）
+axum = "0.7"
+# 跨平台获取用户数据目录（%APPDATA% 等）
+dirs = "5"
+
+[profile.release]
+opt-level = 3
+lto = true

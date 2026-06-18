@@ -1,0 +1,16 @@
+# 构建产物
+/target
+**/*.rs.bk
+
+# 运行时产生的日志/测试下载
+/gui.log
+/test_dl
+*.rdmmeta
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

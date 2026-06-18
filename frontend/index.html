@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rdm 下载管理器</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <symbol id="i-logo" viewBox="0 0 24 24"><path d="M12 3v10m0 0 4-4m-4 4-4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="7" y="5" width="3.5" height="14" rx="1.2" fill="currentColor"/><rect x="13.5" y="5" width="3.5" height="14" rx="1.2" fill="currentColor"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></symbol>
+    <symbol id="i-retry" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 1 3 6.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4 20v-5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1l1-13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v10m0 0 4-4m-4 4-4-4M5 19h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v3m0 14v3m10-10h-3M5 12H2m15.5-7.5-2 2m-7 7-2 2m11 0-2-2m-7-7-2-2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <div class="app">
+    <header class="topbar reveal">
+      <div class="brand">
+        <span class="logo"><svg class="ico"><use href="#i-logo"/></svg></span>
+        <div class="brand-text"><h1>rdm</h1><span class="brand-sub">下载管理器</span></div>
+      </div>
+      <div class="top-right">
+        <div id="status-bar" class="status"><span class="live-dot"></span><span id="status-text">载入中…</span></div>
+        <button id="settings-btn" class="icon-btn" title="分类设置"><svg class="ico"><use href="#i-gear"/></svg></button>
+      </div>
+    </header>
+
+    <section class="add-form reveal" style="--d:60ms">
+      <input id="url" type="text" placeholder="粘贴下载链接  https://…  回车或点添加" autocomplete="off" spellcheck="false" />
+      <button id="add-btn" class="btn-primary"><svg class="ico"><use href="#i-plus"/></svg><span>添加下载</span></button>
+    </section>
+
+    <section id="task-list" class="task-list reveal" style="--d:120ms"></section>
+
+    <footer class="hint reveal" style="--d:180ms">任务列表保存在 <code>%APPDATA%\rdm</code> · 关闭窗口后任务仍在后台运行</footer>
+  </div>
+
+  <!-- 确认下载弹窗（主窗口内模态） -->
+  <div id="confirm-modal" class="modal" hidden>
+    <div class="modal-card">
+      <div class="modal-hd"><h2>确认下载</h2><button class="modal-x" id="cf-close" title="关闭">✕</button></div>
+      <div class="modal-body">
+        <label>链接</label>
+        <input id="cf-url" type="text" readonly />
+        <label>文件名</label>
+        <input id="cf-name" type="text" spellcheck="false" />
+        <label>分类</label>
+        <select id="cf-cat"></select>
+        <label>保存到</label>
+        <div class="dir-row">
+          <input id="cf-dir" type="text" spellcheck="false" />
+          <button id="cf-pick" class="btn-ghost" type="button">选择</button>
+        </div>
+        <label>分段</label>
+        <div class="segs" id="cf-segs">
+          <button class="seg" data-v="4" type="button">4</button>
+          <button class="seg active" data-v="8" type="button">8</button>
+          <button class="seg" data-v="16" type="button">16</button>
+          <button class="seg" data-v="32" type="button">32</button>
+        </div>
+      </div>
+      <div class="err" id="cf-err"></div>
+      <div class="modal-ft">
+        <button class="btn-ghost" id="cf-cancel" type="button">取消</button>
+        <button class="btn-primary" id="cf-ok" type="button">开始下载</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 分类设置弹窗 -->
+  <div id="set-modal" class="modal" hidden>
+    <div class="modal-card wide">
+      <div class="modal-hd"><h2>下载分类</h2><button class="modal-x" data-close>✕</button></div>
+      <div class="modal-body">
+        <p class="modal-tip">为每种文件类型设置默认保存目录。下载确认时会按扩展名自动选中分类。"通用"是兜底分类。</p>
+        <div id="set-list"></div>
+      </div>
+      <div class="modal-ft">
+        <button class="btn-ghost" id="set-add">+ 新增分类</button>
+        <button class="btn-primary" id="set-save">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

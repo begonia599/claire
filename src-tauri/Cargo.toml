@@ -1,0 +1,25 @@
+[package]
+name = "rdm-gui"
+version = "0.1.0"
+edition = "2021"
+description = "rdm 桌面 GUI（Tauri）"
+
+[[bin]]
+name = "rdm-gui"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+# 复用 rdm 库（manager/server/task 等全部复用）
+rdm = { path = ".." }
+# 内嵌 daemon 需要
+tokio = { version = "1", features = ["full"] }
+axum = "0.7"
+dirs = "5"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
